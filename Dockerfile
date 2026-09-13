@@ -10,15 +10,15 @@
 # Base Phase
 # The instructions in this section always run.
 #-------------------------------------------------------------------------------
-# Start with Linux that has Python already installed.
-FROM python:3.14 AS base
+# Start with Linux
+FROM ubuntu:24.04 as base
 
 # Update packages.
 RUN apt update
-# Git downloads the Tandem Tales Python library.
-RUN apt install -y git
+# Git downloads the Tandem Tales C++ library.
+RUN apt install -y git g++ cmake
 
-# Install the Tandem Tales Python client library from GitHub.
+# Install the Tandem Tales C++ client library from GitHub.
 RUN pip install git+https://github.com/gsbirch/tt-client-cpp
 
 # Uninstall software and clean up.
@@ -31,10 +31,14 @@ RUN rm -rf /var/lib/apt/lists/*
 COPY ./root /
 
 # Ensure Python prints output to the console.
-ENV PYTHONUNBUFFERED=1
+# ENV PYTHONUNBUFFERED=1
 
 # Set `/app` as the working directory.
 WORKDIR /app
+
+# Compile the C++ agent
+RUN cmake -S . -B build
+RUN cmake --build build
 
 #-------------------------------------------------------------------------------
 # Development Phase
