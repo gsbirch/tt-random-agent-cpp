@@ -6,7 +6,7 @@
 #ifndef RANDOM_AGENT_H
 #define RANDOM_AGENT_H
 
-class RandomAgent : tt::Client {
+class RandomAgent : public tt::Client {
     /*
     A Tandem Tales agent that makes random choices according to this policy:
     

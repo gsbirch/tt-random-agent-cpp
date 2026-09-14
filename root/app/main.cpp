@@ -69,8 +69,12 @@ int main() {
 	// Create Agent Factory
 	try {
 		RandomAgentFactory factory = RandomAgentFactory(url, port);
+		auto agent = factory.create();
+		agent->connect("localhost", 9005);
 	}
 	catch (...) {
 		std::cerr << "Caught an exception" << std::endl;
 	}
+
+	std::cerr << "this is an error" << std::endl;
 }

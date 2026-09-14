@@ -16,7 +16,8 @@ FROM ubuntu:24.04 AS base
 # Update packages.
 RUN apt update
 # Git downloads the Tandem Tales C++ library.
-RUN apt install -y git g++ cmake
+# openssl allows c++ to use ssl sockets
+RUN apt install -y git g++ cmake openssl
 
 # Copy the agent's files into the image.
 COPY ./root /

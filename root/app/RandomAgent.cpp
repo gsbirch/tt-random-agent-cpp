@@ -48,8 +48,6 @@ RandomAgent::RandomAgent(const std::string& url, const int port):
     7. url: The URL of the Tandem Tales server.
     8. port: The network port of the Tandem Tales server.
     */
-
-    //super().__init__('random', None, None, None, None, None, url, port)
 }
 
 std::string RandomAgent::toString() const
