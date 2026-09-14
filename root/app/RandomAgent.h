@@ -51,7 +51,7 @@ class RandomAgent : tt::Client {
 
     private:
         // this agent's ID
-        int id;
+        // int id;
 
         // ID number that will be assigned to the next agent created.
         static int nextID;
@@ -66,7 +66,7 @@ class RandomAgent : tt::Client {
         static const long DEFAULT_DELAY;
 
         /** The ID number of the next agent to be created */
-        static int nextID;
+        // static int nextID;
 
         /** The random number generator used to make decisions */
         // static final Random random;

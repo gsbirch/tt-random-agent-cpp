@@ -11,30 +11,30 @@
 # The instructions in this section always run.
 #-------------------------------------------------------------------------------
 # Start with Linux
-FROM ubuntu:24.04 as base
+FROM ubuntu:24.04 AS base
 
 # Update packages.
 RUN apt update
 # Git downloads the Tandem Tales C++ library.
 RUN apt install -y git g++ cmake
 
-# Install the Tandem Tales C++ client library from GitHub.
-RUN pip install git+https://github.com/gsbirch/tt-client-cpp
+# Copy the agent's files into the image.
+COPY ./root /
+
+# Clone the C++ library alongside the project.
+# RUN git clone https://github.com/gsbirch/tt-client-cpp.git /library
 
 # Uninstall software and clean up.
-RUN apt purge -y git
+# RUN apt purge -y git
 RUN apt autoremove -y
 RUN apt clean
 RUN rm -rf /var/lib/apt/lists/*
-
-# Copy the agent's files into the image.
-COPY ./root /
 
 # Ensure Python prints output to the console.
 # ENV PYTHONUNBUFFERED=1
 
 # Set `/app` as the working directory.
-WORKDIR /app
+WORKDIR /
 
 # Compile the C++ agent
 RUN cmake -S . -B build
@@ -50,9 +50,10 @@ RUN cmake --build build
 FROM base AS dev
 
 # Run the development version of the entrypoint script and keep the shell open.
-CMD ["sh", "-c", "trap 'exec bash' INT; /app/run.dev.sh; exec bash"]
+#CMD ["sh", "-c", "trap 'exec bash' INT; /app/run.dev.sh; exec bash"]
+CMD ["./build/app/tt-random-agent"]
 
-#-------------------------------------------------------------------------------
+#---------------------------------------------------------------------p----------
 # Production Phase
 # The instructions in this section run if you build the image with
 # `--target prod`. Since this is the last phase defined, these instructions will
@@ -62,4 +63,4 @@ CMD ["sh", "-c", "trap 'exec bash' INT; /app/run.dev.sh; exec bash"]
 FROM base AS prod
 
 # Run the production version of the entrypoint script.
-CMD ["sh", "-c", "/app/run.prod.sh"]
+CMD ["./build/app/tt-random-agent"]

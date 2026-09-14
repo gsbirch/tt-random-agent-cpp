@@ -15,6 +15,7 @@ import tt
 #include "RandomAgent.h"
 #include <string>
 #include <iostream>
+#include <tt/Role.h>
 
 const double RandomAgent::PASS_PROBABILITY = 0.3;
 const double RandomAgent::SUCCEED_PROBABILITY = 0.8;
@@ -25,8 +26,8 @@ const std::string RandomAgent::DEFAULT_URL = "localhost";
 const int RandomAgent::DEFAULT_PORT = 9005;
 //Client.DEFAULT_PORT;
 
-RandomAgent::RandomAgent(const std::string& url = "", const int port = 0):
-    delay(DEFAULT_DELAY), id(nextID++) {
+RandomAgent::RandomAgent(const std::string& url, const int port):
+    Client("random", "", "", tt::Role::NONE, "", "", url, port), delay(DEFAULT_DELAY) {
     /*
     The arguments to `tt.Client` are:
     1. name: This agent's name. Hard-code this. Use up to 20 letters,
