@@ -69,17 +69,14 @@ int main() {
 	// Create Agent Factory
 	try {
 		RandomAgentFactory factory = RandomAgentFactory(url, port);
-		std::cout << "factory created" << std::endl;
 		auto agent = factory.create();
-		std::cout << "agent created" << std::endl;
 		agent->start();
-		std::cout << "agent started" << std::endl;
 		tt::Join j;
-		j.name = "myName";
-		j.password = "myPassword";
-		j.world = "gamer land";
+		j.name = "web";
+		j.password = "dummy";
+		j.world = "tutorial";
 		j.role = tt::Role::PLAYER;
-		j.partner = "a friend";
+		j.partner = "random";
 		agent->sendMessage(j);
 	}
 	catch (...) {
