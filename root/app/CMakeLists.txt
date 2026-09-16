@@ -4,7 +4,11 @@ add_executable(tt-random-agent
     RandomAgentFactory.cpp
 )
 
+find_package(OpenSSL REQUIRED)
+
 target_link_libraries(tt-random-agent
     PRIVATE
         tt
+        OpenSSL::SSL
+        OpenSSL::Crypto
 )
