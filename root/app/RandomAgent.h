@@ -11,16 +11,16 @@ class RandomAgent : public tt::Client {
     A Tandem Tales agent that makes random choices according to this policy:
     
     - If this is a normal turn, the agent chooses to `PASS` control to its
-      partner 30% of the time. If not passing, it chooses a non-`PASS` action
-      uniformly at random.
+    partner 30% of the time. If not passing, it chooses a non-`PASS` action
+    uniformly at random.
     - If this is a `SUCCEED`/`FAIL` decision, the agent chooses `SUCCEED` 80% of
-      the time.
+    the time.
     
     Arguments:
         url (str): The URL of the Tandem Tales server.
         port (int): The network port of the Tandem Tales server.
     */
-   
+
     public:
         /** The default server URL used if none is provided */
         static const std::string DEFAULT_URL;
