@@ -1,18 +1,19 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <tt/ClientFactory.h>
 #include "RandomAgent.h"
 
 #ifndef RANDOM_AGENT_FACTORY
 #define RANDOM_AGENT_FACTORY
 
-class RandomAgentFactory {
+class RandomAgentFactory: public tt::ClientFactory {
     public:
         RandomAgentFactory(const std::string& url, const int port);
 
         std::string toString() const;
         void onStart() const;
-        std::unique_ptr<RandomAgent> create() const;
+        std::unique_ptr<tt::Client> create() const override;
         void onClose() const;
         void onStop() const;
 

@@ -17,7 +17,7 @@ void RandomAgentFactory::onStart() const
     std::cout << *this << " has started." << std::endl;
 }
 
-std::unique_ptr<RandomAgent> RandomAgentFactory::create() const
+std::unique_ptr<tt::Client> RandomAgentFactory::create() const
 {
     return std::make_unique<RandomAgent>(url, port);
 }

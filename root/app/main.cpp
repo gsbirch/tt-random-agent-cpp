@@ -69,15 +69,15 @@ int main() {
 	// Create Agent Factory
 	try {
 		RandomAgentFactory factory = RandomAgentFactory(url, port);
-		auto agent = factory.create();
-		agent->start();
-		tt::Join j;
-		j.name = "web";
-		j.password = "dummy";
-		j.world = "tutorial";
-		j.role = tt::Role::PLAYER;
-		j.partner = "random";
-		agent->sendMessage(j);
+		factory.execute();
+		// agent->start();
+		// tt::Join j;
+		// j.name = "web";
+		// j.password = "dummy";
+		// j.world = "tutorial";
+		// j.role = tt::Role::PLAYER;
+		// j.partner = "random";
+		// agent->sendMessage(j);
 	}
 	catch (...) {
 		std::cerr << "Caught an exception" << std::endl;
