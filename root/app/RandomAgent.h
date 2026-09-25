@@ -1,7 +1,9 @@
 #include <string>
 #include <ostream>
 #include <tt/Client.h>
+#include <tt/io/Connect.h>
 
+#pragma once
 
 #ifndef RANDOM_AGENT_H
 #define RANDOM_AGENT_H
@@ -38,14 +40,14 @@ class RandomAgent : public tt::Client {
         RandomAgent(const std::string& url = "", const int port = 0);
 
         std::string toString() const;
-        void onConnect(std::string connect);
-        void onStart(std::string world, std::string role, std::string state);
-        void onUpdate(std::string status);
-        int onChoice(std::string status);
-        void onEnd(std::string ending);
-        void onClose();
-        void onStop(std::string message);
-        void onDisconnect(std::string);
+        void onConnect(tt::Connect connect) override;
+        void onStart(const tt::World* world, tt::Role role, const tt::State* state) override;
+        void onUpdate(const tt::Status* status) override;
+        int onChoice(const tt::Status* status) override;
+        void onEnd(const tt::Ending *ending) override;
+        void onStop(std::string message) override;
+        void onClose() override;
+        void onDisconnect() override;
 
         friend std::ostream& operator<<(std::ostream& os, const RandomAgent& a);
 

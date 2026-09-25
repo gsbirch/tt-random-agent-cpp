@@ -27,7 +27,7 @@ const int RandomAgent::DEFAULT_PORT = 9005;
 //Client.DEFAULT_PORT;
 
 RandomAgent::RandomAgent(const std::string& url, const int port):
-    Client("random", "", "", tt::Role::NONE, "", "", url, port), delay(DEFAULT_DELAY) {
+    Client("random", "password", "tutorial", tt::Role::GAME_MASTER, "test", "", url, port), delay(DEFAULT_DELAY) {
     /*
     The arguments to `tt.Client` are:
     1. name: This agent's name. Hard-code this. Use up to 20 letters,
@@ -56,13 +56,13 @@ std::string RandomAgent::toString() const
 }
 
 // Optional: Runs when the client connects to the server.
-void RandomAgent::onConnect(std::string connect)
+void RandomAgent::onConnect(tt::Connect connect)
 {
-    std::cout << *this << " has connected to the server." << std::endl;
+    std::cout << connect << std::endl;
 }
 
 // Optional: Runs when the client starts its session.
-void RandomAgent::onStart(std::string world, std::string role, std::string state)
+void RandomAgent::onStart(const tt::World* world, tt::Role role, const tt::State* state)
 {
     //has started its session as the {role} in world \"{world['name']}\"."
     std::cout << *this << " has started its session as the " << role 
@@ -71,19 +71,20 @@ void RandomAgent::onStart(std::string world, std::string role, std::string state
 
 // Optional: Runs each time the client sees a story world update, whether
 //  or not it is the client's turn.
-void RandomAgent::onUpdate(std::string status)
+void RandomAgent::onUpdate(const tt::Status* status)
 {
+    std::cout << *status << std::endl;
 }
 
 // Required: Runs each time the world updates and it is the client's turn.
-int RandomAgent::onChoice(std::string status)
+int RandomAgent::onChoice(const tt::Status* status)
 {
     // lots o work to be done here
-    return -1;
+    return 0;
 }
 
 // Optional: Runs when the story reaches an ending.
-void RandomAgent::onEnd(std::string ending)
+void RandomAgent::onEnd(const tt::Ending *ending)
 {
     std::cout << *this << " has reached an ending: \"" << ending << "\"" << std::endl;
 }
@@ -107,7 +108,7 @@ void RandomAgent::onStop(std::string message)
 }
 
 // Optional: Run when the client disconnects from the server.
-void RandomAgent::onDisconnect(std::string)
+void RandomAgent::onDisconnect()
 {
     std::cout << *this << " has disconnected." << std::endl;
 }
