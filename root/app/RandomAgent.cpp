@@ -80,13 +80,13 @@ int RandomAgent::onChoice(const tt::Status* status)
             choice = 1; // fail
     }
     // If this is a normal turn and the agent has at least one choice...
-    else if(status->choices.size() > 1) {
+    else if(status->getChoices().size() > 1) {
         // Decide if I will act or pass.
         double x = (rand() % 101) * 1.0;
         if (x < PASS_PROBABILITY)
-            choice = status->choices.size() - 1; // pass
+            choice = status->getChoices().size() - 1; // pass
         else
-            choice = rand() % (status->choices.size() - 1); // act
+            choice = rand() % (status->getChoices().size() - 1); // act
     }
     // If the agent has no choices, pass.
     else
@@ -105,7 +105,7 @@ int RandomAgent::onChoice(const tt::Status* status)
         // If interrupted, return choice immediately.
     }
     // Return the choice.
-	std::cout << *this << " chooses: \"" << status->choices[choice]->description << "\"." << std::endl;
+	std::cout << *this << " chooses: \"" << status->getChoices()[choice]->description << "\"." << std::endl;
     return choice;
 }
 
@@ -141,7 +141,7 @@ void RandomAgent::onDisconnect()
 
 bool RandomAgent::isProposal(const tt::Status *status)
 {
-    auto choices = status->choices;
+    auto choices = status->getChoices();
     return choices.size() == 2 &&
         choices[0]->type == tt::Turn::Type::SUCCEED &&
         choices[1]->type == tt::Turn::Type::FAIL;
