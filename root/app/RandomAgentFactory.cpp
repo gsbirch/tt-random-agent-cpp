@@ -1,4 +1,5 @@
 #include "RandomAgentFactory.h"
+
 #include <iostream>
 
 RandomAgentFactory::RandomAgentFactory(const std::string &url, const int port)
@@ -30,9 +31,4 @@ void RandomAgentFactory::onClose() const
 void RandomAgentFactory::onStop() const
 {
     std::cout << *this << " has stopped." << std::endl;
-}
-
-std::ostream& operator<<(std::ostream& os, const RandomAgentFactory& a) {
-    os << a.toString();
-    return os;
 }

@@ -1,23 +1,35 @@
+#pragma once
+
+#include "RandomAgent.h"
+
 #include <iostream>
 #include <string>
 #include <memory>
+
 #include <tt/ClientFactory.h>
-#include "RandomAgent.h"
 
 #ifndef RANDOM_AGENT_FACTORY
 #define RANDOM_AGENT_FACTORY
 
+/**
+ * A factory that continuously creates {@link RandomAgent}s as needed.
+ */
 class RandomAgentFactory: public tt::ClientFactory {
     public:
+        /**
+         * Creates a new random agent factory that connects to a Tandem Tales server
+         * on the given URL and port number.
+         * 
+         * @param url the URL of the server
+         * @param port the port number of the server
+         */
         RandomAgentFactory(const std::string& url, const int port);
 
-        std::string toString() const;
-        void onStart() const;
+        std::string toString() const override;
+        void onStart() const override;
         std::unique_ptr<tt::Client> create() const override;
-        void onClose() const;
-        void onStop() const;
-
-        friend std::ostream& operator<<(std::ostream& os, const RandomAgentFactory& a);
+        void onClose() const override;
+        void onStop() const override;
 
     private:
         /** The URL of the server */

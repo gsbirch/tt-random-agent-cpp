@@ -1,12 +1,13 @@
-#include <iostream>
-#include <string>
 #include "RandomAgent.h"
 #include "RandomAgentFactory.h"
 
-static std::string rpad(const std::string& str) {
+#include <iostream>
+#include <string>
+#include <cxxopts.hpp>
+
+std::string rpad(const std::string& str) {
     return str + std::string(std::max(0, 16 - (int)str.length()), ' ');
 }
-
 
 /**
  * Configure and run the agent factory based on Java arguments passed from
@@ -16,7 +17,7 @@ static std::string rpad(const std::string& str) {
  * @throws Exception if a problem occurs during the factory setup or while
  * it is running
  */
-int main() {
+int main(int argc, char *argv[]) {
     /** The name of this agent */
 	const std::string NAME = "Tandem Tales Random Agent (C++)";
 	
@@ -46,44 +47,35 @@ int main() {
 	
 	std::cout << TITLE << std::endl;
 
-	// Help
-	// Arguments arguments = new Arguments(args);
-	// if(arguments.contains(HELP_KEY)) {
-	// 	System.out.println(USAGE);
-	// 	return;
-	// }
+	// Parse args
+	cxxopts::Options options("tt-random-agent", "A sample Tandem Tales agent written in C++");
+	options.add_options()
+		(HELP_KEY, 	"Help")
+		(URL_KEY,	"URL",	cxxopts::value<std::string>())
+		(PORT_KEY, 	"Port",	cxxopts::value<int>());
+	auto result = options.parse(argc, argv);
 
+	// Help
+	if (result.count(HELP_KEY)) {
+		std::cout << USAGE << std::endl;
+		return -1;
+	}
+	
 	// Network Settings
-	std::string url = "localhost";
-	int port = 9005;
-	//arguments.getValue(URL_KEY, RandomAgent.DEFAULT_URL);
-	// if(url == "")
-	// 	url = RandomAgent.DEFAULT_URL;
-	// int port;
-	// if(arguments.contains(PORT_KEY))
-	// 	port = Integer.parseInt(arguments.getValue(PORT_KEY, Integer.toString(RandomAgent.DEFAULT_PORT)));
-	// else
-	// 	port = RandomAgent.DEFAULT_PORT;
-	// Check for unused arguments.
-	// arguments.checkUnused();
+	std::string url = RandomAgent::DEFAULT_URL;
+	int port = RandomAgent::DEFAULT_PORT;
+	if (result.count(URL_KEY))
+		url = result[URL_KEY].as<std::string>();
+	if (result.count(PORT_KEY))
+		url = result[PORT_KEY].as<int>();
+		
 	// Create Agent Factory
 	try {
 		RandomAgentFactory factory = RandomAgentFactory(url, port);
 		factory.execute();
-		// agent->start();
-		// tt::Join j;
-		// j.name = "web";
-		// j.password = "dummy";
-		// j.world = "tutorial";
-		// j.role = tt::Role::PLAYER;
-		// j.partner = "random";
-		// agent->sendMessage(j);
 	}
 	catch (...) {
 		std::cerr << "Caught an exception" << std::endl;
 	}
-
-	
-
-	std::cerr << "this is an error" << std::endl;
+	return 0;
 }
