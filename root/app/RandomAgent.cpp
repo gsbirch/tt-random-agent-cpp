@@ -21,7 +21,7 @@ const int RandomAgent::DEFAULT_PORT = 9005;
 //Client.DEFAULT_PORT;
 
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-Client("random", "password", "tutorial", tt::Role::GAME_MASTER, "test", "", url, port), delay(delay)
+Client("random", std::getenv(ENVIRONMENT_VARIABLE_PASSWORD.c_str()), "tutorial", tt::Role::GAME_MASTER, "test", "", url, port), delay(delay)
 {
     // set the seed for random
     srand(seed);

@@ -1,11 +1,11 @@
 #===============================================================================
-# Tandem Tales Agent (Python) Compose Configuration
+# Tandem Tales Agent (C++) Compose Configuration
 # 
-# Defines how to run a Tandem Tales web server and a Python agent that connects
+# Defines how to run a Tandem Tales web server and a C++ agent that connects
 # to that server. This configuration is meant for development and testing.
 #===============================================================================
 services:
-  # Python agent configuration
+  # C++ agent configuration
   agent:
     image: tt-random-agent-cpp
     build:
@@ -35,6 +35,8 @@ services:
   # Tandem Tales server configuration
   server:
     image: tt-web
+    tmpfs:
+    - /var/log/tt
     # Configure the server's environment variables.
     environment:
       # Add an agent with these values to the database.
