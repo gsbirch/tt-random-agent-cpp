@@ -123,7 +123,7 @@ void RandomAgent::onClose()
 }
 
 // Optional: Runs when the session stops.
-void RandomAgent::onStop(std::string message)
+void RandomAgent::onStop(const std::string& message)
 {
     if (message == "") {
         std::cout << *this << " has stopped." << std::endl;

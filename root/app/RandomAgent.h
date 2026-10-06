@@ -80,7 +80,7 @@ class RandomAgent : public tt::Client {
         void onUpdate(const tt::Status* status) override;
         int onChoice(const tt::Status* status) override;
         void onEnd(const tt::Ending *ending) override;
-        void onStop(std::string message) override;
+        void onStop(const std::string& message) override;
         void onClose() override;
         void onDisconnect() override;
 
