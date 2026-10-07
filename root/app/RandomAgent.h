@@ -84,8 +84,6 @@ class RandomAgent : public tt::Client {
         void onClose() override;
         void onDisconnect() override;
 
-        // friend std::ostream& operator<<(std::ostream& os, const RandomAgent& a);
-
     private:
         /** Probability that this agent will pass control to its partner */
         static const double PASS_PROBABILITY;
