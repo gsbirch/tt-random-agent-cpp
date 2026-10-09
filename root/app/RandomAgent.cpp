@@ -105,7 +105,7 @@ int RandomAgent::onChoice(const tt::Status* status)
         // If interrupted, return choice immediately.
     }
     // Return the choice.
-	std::cout << *this << " chooses: \"" << status->getChoices()[choice]->description << "\"." << std::endl;
+	std::cout << *this << " chooses: \"" << status->getChoices()[choice]->getDescription() << "\"." << std::endl;
     return choice;
 }
 
