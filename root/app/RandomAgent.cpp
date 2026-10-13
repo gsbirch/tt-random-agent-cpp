@@ -21,7 +21,7 @@ const int RandomAgent::DEFAULT_PORT = 9005;
 //Client.DEFAULT_PORT;
 
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-Client("random", std::getenv(ENVIRONMENT_VARIABLE_PASSWORD.c_str()), "tutorial", tt::Role::GAME_MASTER, "test", "", url, port), delay(delay)
+Client("random", std::getenv(ENVIRONMENT_VARIABLE_PASSWORD.c_str()), "tutorial", tt::Role::GAME_MASTER, "", "", url, port), delay(delay)
 {
     // set the seed for random
     srand(seed);
@@ -112,14 +112,14 @@ int RandomAgent::onChoice(const tt::Status* status)
 // Optional: Runs when the story reaches an ending.
 void RandomAgent::onEnd(const tt::Ending *ending)
 {
-    std::cout << *this << " has reached an ending: \"" << ending << "\"" << std::endl;
+    std::cout << *this << " has reached an ending: \"" << *ending << "\"" << std::endl;
 }
 
 // Optional: Runs when the client stops normally by the `close` method or
 //  because the story ended. Does not run if client crashes.
 void RandomAgent::onClose()
 {
-    std::cout << *this << " had closed." << std::endl;
+    std::cout << *this << " has closed." << std::endl;
 }
 
 // Optional: Runs when the session stops.
