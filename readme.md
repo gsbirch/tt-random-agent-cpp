@@ -10,15 +10,14 @@ decisions according to this policy:
 - If this is a `SUCCEED`/`FAIL` decision, the agent chooses `SUCCEED` 80% of the
   time.
 
-This repository exists to be forked by anyone developing their own Python agent.
+This repository exists to be forked by anyone developing their own C++ agent.
 
 The [Docker image](Dockerfile) in this project defines a
 [container](https://www.docker.com/resources/what-container/) (basically a
-lightweight virtual machine) that has
-
- [Python](http://python.org), the
-
+lightweight virtual machine) that has [g++](https://gcc.gnu.org/), 
+[CMake](https://cmake.org/), the
 [Tandem Tales C++ client library](https://github.com/gsbirch/tt-client-cpp),
+some additional packages for [SSL](https://www.cloudflare.com/learning/ssl/what-is-ssl/),
 and [the code for this agent](root/app) already installed. Docker makes it easy
 to package your agent so others can easily run it without worrying about
 dependencies, versions numbers, etc.
@@ -36,10 +35,7 @@ for you so you can focus on developing your agent.
 To download and run this agent, you need [Git](http://git-scm.com),
 [Docker](http://www.docker.com), and
 [Docker Compose](http://docs.docker.com/compose) installed. You *don't* need
-
-Python
-
-or any libraries installed, because all of that is already in the Docker
+g++ or any libraries installed, because all of that is already in the Docker
 image.
 
 To download and run this agent alongside a local instance of the Tandem Tales
@@ -59,12 +55,12 @@ play an interactive story with this agent.
 ### Name and Settings
 
 The first thing you should do to customize this agent is to change its name.
-Find the agent constructor in [`main.py`](root/app/main.py):
+Find the agent constructor in [`RandomAgent.cpp`](root/app/RandomAgent.cpp):
 ```
-def __init__(self, url='localhost', port=tt.DEFAULT_PORT):
-    super().__init__('random', None, None, None, None, None, url, port)
+RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
+	Client("random", "", tt::Role::NONE, "", url, port), delay(delay)
 ```
-Change the string `'random'` to your agent's new name.
+Change the string `"random"` to your agent's new name.
 
 You also need to set this new name name in the environment variable file
 [`.env`](.env). Change the line that looks like this:
@@ -87,8 +83,8 @@ master). Most agents aren't that flexible. Suppose your agent is only designed
 to play in the `tutorial` world and only in the `GAME_MASTER` role. You'll need
 to change your agent constructor to look something like this:
 ```
-def __init__(self, url='localhost', port=tt.DEFAULT_PORT):
-    super().__init__('barista', None, 'tutorial', tt.GM, None, None, url, port)
+RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
+	Client("barista", "tutorial", tt::Role::GAME_MASTER, "", url, port), delay(delay)
 ```
 And don't forget to change the [`.env`](.env) file to match:
 ```
@@ -101,60 +97,64 @@ role="GAME_MASTER"
 
 ### Agent Code
 
-Now it's time to start changing the code. The random agent is pretty simple. In
-fact, it's [just one file](root/app/main.py)!
+Now it's time to start changing the code. The random agent is pretty simple. 
+Nearly all changes you make will be contained in [one file](root/app/RandomAgent.cpp).
 
 The only method a Tandem Tales
-[client](https://sgware.github.io/tt-client-python/api/#tt.Client) *needs* to
+[client](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html) *needs* to
 implements is
-[`on_choice`](https://sgware.github.io/tt-client-python/api/#tt.Client.on_choice).
+[`on_choice(const Status*)`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a57493c0cd87fb7ef6b59cd4b8a3a75af).
 Every time it is your agent's turn in the story, this method gets called. The
 `status` object has
 [a ton of useful information](https://sgware.github.io/tt/protocol.html#status-object)
 in it, including:
-- `status['history']` has all the turns that have happened so far in the story.
-- `status['state']` tells you the current value of all the world's variables.
-- `status['descriptions']` has natural language descriptions of all the objects
+- `status->getHistory()` has all the turns that have happened so far in the story.
+- `status->getState()` tells you the current value of all the world's variables.
+- `status->getDescriptions()` has natural language descriptions of all the objects
   your agent can currently see.
-- `status['choices']` is a list of the things you can do next.
+- `status->getChoices()` is a list of the things you can do next.
 
-The `on_choice` method should return the integer index (starting at 0) of the
-choice from `status['choices']` that you want to make.
+The `on_choice(const Status*)` method should return the integer index (starting at 0) of the
+choice from `status->getChoices(const Status*)` that you want to make.
 
 Change the `on_choice` method like this to print the `world` and `status`
 objects to file so you can see all the useful information in them:
 ```
-def on_choice(self, status):
-	with open("world.json", "w") as file:
-		json.dump(self.world, file, indent=4)
-	with open("status.json", "w") as file:
-		json.dump(status, file, indent=4)
+int RandomAgent::onChoice(const tt::Status* status) {
+	ofstream f("world.json");
+	json j = 
 	...
+}
 ```
 Don't forget to `import json` at the top of the file too.
 
-Toward the bottom of [`main.py`](root/app/main.py) you'll see the
-`RandomAgentFactory` class. An agent only plays one story session and then
-closes. If you want to be able to play with your agent more than once, you need
-a factory that makes new agents on demand.
+Now take a look at
+[`RandomAgentFactory.h](root/app/src/tt/RandomAgentFactory.h). An agent
+only plays one story session and then closes. If you want to be able to play
+with your agent more than once, you need a factory that makes new agents on
+demand.
 
 Good news! Almost all of that code is already written for you. All you have to
 do is extend
-[`tt.Factory`](https://sgware.github.io/tt-client-python/api/#tt.Factory) and
+[`tt::ClientFactory`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1ClientFactory.html) and
 implement the
-[`create`](https://sgware.github.io/tt-client-python/api/#tt.Factory.create)
+[`create`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1ClientFactory.html#a2b3546a43c2c93bc54e2bc9482056987)
 method like this:
 ```
-class RandomAgentFactory(tt.Factory):
-    def create(self):
-        return RandomAgent()
+std::unique_ptr<tt::Client> RandomAgentFactory::create() const {
+    return std::make_unique<RandomAgent>(url, port);
+}
 ```
 
-At the bottom of [`main.py`](root/app/main.py) you'll see the code that makes a
+In the `main(int argc, char *argv[])` method of
+[`main.cpp`](root/app/main.cpp),
+ you'll see the code that makes a
 new factory and runs it:
 ```
-factory = RandomAgentFactory()
-factory.run()
+try {
+		RandomAgentFactory factory = RandomAgentFactory(url, port);
+		factory.execute();
+}
 ```
 
 A factory starts by making one agent. That agent waits on the server for a
@@ -167,27 +167,27 @@ By the way, you might want to change the class names `RandomAgent` and
 
 ### Agent Lifecycle Methods
 
-The only methods you *need* to implement are `on_choice` in your agent and
-`create` in your factory. But there's a bunch of other methods that get called
+The only methods you *need* to implement are `onChoice(const Status*)` in your agent and
+`create()` in your factory. But there's a bunch of other methods that get called
 at important moments in the agent's life that you might find helpful.
 
 For example, if your agent need to load some resource before it joins the
 server, you could do that in the
-[`on_connect`](https://sgware.github.io/tt-client-python/api/#tt.Client.on_connect)
+[`onConnect(const Connect*)`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a97adf5d690a59597a098f1d4d10e0c28)
 method which runs after opening the connection but before waiting for a partner.
 If you need to clean up that resource before the agent stops, override
-[`on_disconnect`](https://sgware.github.io/tt-client-python/api/#tt.Client.on_disconnect).
+[`onDisconnect()`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a09fa5d13b359df05314af0cdb66d231f).
 If your agent can play in any story world, you might want to override the
-[`on_start`](https://sgware.github.io/tt-client-python/api/#tt.Client.on_start)
+[`onStart(const World*, Role, const State*)`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#af4a40531da0c1fd79d9dab5a7447425d)
 method, which runs as soon as the agent's session starts and tells you all the
 details of the story world, your agent's role, and the starting state of the
 world.
 
 Got a resource you need to load once and share across all agents? Load it in
 your factory's
-[`on_start`](https://sgware.github.io/tt-client-python/api/#tt.Factory.on_start)
+[`onStart()`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1ClientFactory.html#abfc2b3c2edb56a11172ce9a88f62c28e)
 method and clean it up in
-[`on_stop`](https://sgware.github.io/tt-client-python/api/#tt.Factory.on_stop).
+[`onStop()`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1ClientFactory.html#a90fc6a364e1386868dac41de3b773b99).
 
 Check out the
 [Tandem Tales Python Client](https://sgware.github.io/tt-client-python/) library
@@ -202,7 +202,7 @@ COPY ./root /
 ```
 That line copies all the files and directories in this project's [`root`](root)
 folder into the container's root `/` directory. So if you add the file
-`root/app/utility.py` to this project, you'll find it at `/app/utility.py` in
+`root/app/Utility.h` to this project, you'll find it at `/app/Utility.h` in
 the container. If you add `root/usr/local/bin/script.sh` to this project, you'll
 find it at `/usr/local/bin/script.sh` in the container.
 
@@ -211,7 +211,7 @@ that gets tedious. When you launch this container using the Docker Compose
 commands shown above, it mounts the [`root/app`](root/app) directory as a
 [volume](https://docs.docker.com/engine/storage/volumes/). That means everything
 in that directory is actually a local file on your computer. So you can edit
-`main.py` while the container is running and the container sees it instantly.
+`RandomAgent.cpp` while the container is running and the container sees it instantly.
 Similarly, any files that get created (like `status.json` from earlier) are on
 your computer and will stay there when the container stops.
 
@@ -259,14 +259,15 @@ apikey=0123456789abcdefghijklmnopqrstuvwxyz
 > sending your agent to someone else to run, don't include your API key. They
 > should provide their own key.
 
-Now you can modify your `on_choice` method to use an LLM to make a random choice
+Now you can modify your `onChoice(const Status*)` method to use an LLM to make a random choice
 like this:
 ```
-def on_choice(self, status):
-	count = len(status['choices'])
-	prompt = f"Choose a number between 0 and {count} inclusive."
-	response = self.external.complete(prompt)
-	return int(response)
+int RandomAgent::onChoice(const tt::Status* status)
+	int count = status->getChoices().size();
+    std::string role = "You are a helpful assistant.";
+    std::string prompt = "Choose a number between 0 and " + std::to_string(count) + " inclusive.";
+    std::string response = complete({role, prompt}, "medium");
+    return stoi(response);
 ```
 
 But watch out! This code assumes you'll get just an interger back as the
@@ -274,7 +275,7 @@ response, but you might get something like `"I choose 3"`. Your code will need
 to handle those cases.
 
 Check out the
-[Tandem Tales Python Client documentation](https://sgware.github.io/tt-client-python/api/#tt.ExternalAPI)
+[Tandem Tales C++ Client documentation](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a46e7a9bdd5db1a5ca01f9540e011e655)
 to see all the options available in the external API.
 
 ## Version History
@@ -283,7 +284,7 @@ to see all the options available in the external API.
 
 ## License
 
-The Tandem Tales Random Agent (Python) was developed by Stephen G. Ware PhD.
+The Tandem Tales Random Agent (C++) was developed by Gage Birchmeier.
 in the [Computer Science department](http://cs.uky.edu) at the
 [University of Kentucky](http://uky.edu). Development was sponsored in part by
 the [US National Science Foundation](http://www.nsf.gov),
