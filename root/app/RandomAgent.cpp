@@ -7,6 +7,7 @@
 #include <thread>
 #include <chrono>
 #include <random>
+#include <fstream>
 
 #include <tt/Role.h>
 #include <tt/world/Turn.h>
@@ -21,7 +22,7 @@ const int RandomAgent::DEFAULT_PORT = 9005;
 //Client.DEFAULT_PORT;
 
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-Client("random", std::getenv(ENVIRONMENT_VARIABLE_PASSWORD.c_str()), "tutorial", tt::Role::GAME_MASTER, "", "", url, port), delay(delay)
+Client("random", "", tt::Role::NONE, "", url, port), delay(delay)
 {
     // set the seed for random
     srand(seed);
@@ -64,7 +65,7 @@ void RandomAgent::onStart(const tt::World* world, tt::Role role, const tt::State
 //  or not it is the client's turn.
 void RandomAgent::onUpdate(const tt::Status* status)
 {
-    std::cout << *status << std::endl;
+    
 }
 
 // Required: Runs each time the world updates and it is the client's turn.
@@ -83,7 +84,7 @@ int RandomAgent::onChoice(const tt::Status* status)
     else if(status->getChoices().size() > 1) {
         // Decide if I will act or pass.
         double x = (rand() % 101) * 1.0;
-        if (x < PASS_PROBABILITY)
+        if (x < PASS_PROBABILITY * 100.0)
             choice = status->getChoices().size() - 1; // pass
         else
             choice = rand() % (status->getChoices().size() - 1); // act
