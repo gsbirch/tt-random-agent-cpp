@@ -1,7 +1,7 @@
 # Tandem Tales Random Agent (C++)
 
 This repository provides a simple example of how to create a
-[Tandem Tales](https:sgware.github.io/tt) agent in C++ that makes random
+[Tandem Tales](https://sgware.github.io/tt) agent in C++ that makes random
 decisions according to this policy:
 
 - If this is a normal turn, the agent chooses to `PASS` control to its partner
@@ -129,7 +129,7 @@ int RandomAgent::onChoice(const tt::Status* status) {
 Don't forget to `import json` at the top of the file too.
 
 Now take a look at
-[`RandomAgentFactory.h](root/app/src/tt/RandomAgentFactory.h). An agent
+[`RandomAgentFactory.h](root/app/RandomAgentFactory.h). An agent
 only plays one story session and then closes. If you want to be able to play
 with your agent more than once, you need a factory that makes new agents on
 demand.
@@ -152,8 +152,8 @@ In the `main(int argc, char *argv[])` method of
 new factory and runs it:
 ```
 try {
-		RandomAgentFactory factory = RandomAgentFactory(url, port);
-		factory.execute();
+  RandomAgentFactory factory = RandomAgentFactory(url, port);
+  factory.execute();
 }
 ```
 
@@ -190,7 +190,7 @@ method and clean it up in
 [`onStop()`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1ClientFactory.html#a90fc6a364e1386868dac41de3b773b99).
 
 Check out the
-[Tandem Tales Python Client](https://sgware.github.io/tt-client-python/) library
+[Tandem Tales C++ Client](https://gsbirch.github.io/tt-client-cpp/) library
 for documentation on the factory and agent lifecycles.
 
 ### Adding and Changing Files
@@ -230,7 +230,7 @@ got a session open in a web browser, close that tab so the factory can stop.
 Then make some changes to the code using your favorite text editor on your
 computer. Now type this to start the factory back up:
 ```
-python3 main.py
+./build/app/tt-random-agent
 ```
 
 ### Using the External API
@@ -263,11 +263,11 @@ Now you can modify your `onChoice(const Status*)` method to use an LLM to make a
 like this:
 ```
 int RandomAgent::onChoice(const tt::Status* status)
-	int count = status->getChoices().size();
-    std::string role = "You are a helpful assistant.";
-    std::string prompt = "Choose a number between 0 and " + std::to_string(count) + " inclusive.";
-    std::string response = complete({role, prompt}, "medium");
-    return stoi(response);
+  int count = status->getChoices().size();
+  std::string role = "You are a helpful assistant.";
+  std::string prompt = "Choose a number between 0 and " + std::to_string(count) + " inclusive.";
+  std::string response = complete({role, prompt}, "medium");
+  return stoi(response);
 ```
 
 But watch out! This code assumes you'll get just an interger back as the
@@ -275,7 +275,7 @@ response, but you might get something like `"I choose 3"`. Your code will need
 to handle those cases.
 
 Check out the
-[Tandem Tales C++ Client documentation](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a46e7a9bdd5db1a5ca01f9540e011e655)
+[Tandem Tales C++ Client documentation](https://gsbirch.github.io/tt-client-cpp/classtt_1_1ExternalAPI.html)
 to see all the options available in the external API.
 
 ## Version History
@@ -284,7 +284,7 @@ to see all the options available in the external API.
 
 ## License
 
-The Tandem Tales Random Agent (C++) was developed by Gage Birchmeier.
+The Tandem Tales Random Agent (C++) was developed by Gage Birchmeier
 in the [Computer Science department](http://cs.uky.edu) at the
 [University of Kentucky](http://uky.edu). Development was sponsored in part by
 the [US National Science Foundation](http://www.nsf.gov),
