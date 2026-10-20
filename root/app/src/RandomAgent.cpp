@@ -71,6 +71,16 @@ void RandomAgent::onUpdate(const tt::Status* status)
 // Required: Runs each time the world updates and it is the client's turn.
 int RandomAgent::onChoice(const tt::Status* status)
 {
+    std::ofstream statusFile("app/status.json");
+    nlohmann::json s = *status;
+    statusFile << s.dump(4) << std::endl;
+    statusFile.close();
+    
+    std::ofstream worldFile("app/world.json");
+    nlohmann::json w = *getWorld();
+    worldFile << w.dump(4) << std::endl;
+    worldFile.close();
+
     int choice = -1;
     // If my partner has proposed a move, accept or reject it.
     if(isProposal(status)) {

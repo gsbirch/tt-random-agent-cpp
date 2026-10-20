@@ -23,11 +23,10 @@ RUN apt install -y openssl libssl-dev libcurl4-openssl-dev ca-certificates
 COPY ./root /
 
 # Set `/app` as the working directory.
-WORKDIR /
+WORKDIR /app
 
-# Compile the C++ agent
-RUN cmake -S . -B build
-RUN cmake --build build
+# Build the agent
+RUN ./compile.sh
 
 # Clean up the container
 RUN apt purge -y git
@@ -36,4 +35,4 @@ RUN apt clean
 RUN rm -rf /var/lib/apt/lists/*
 
 # Run the agent
-CMD ["./build/app/tt-random-agent"]
+CMD ["./run.sh"]

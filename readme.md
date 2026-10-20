@@ -58,7 +58,7 @@ The first thing you should do to customize this agent is to change its name.
 Find the agent constructor in [`RandomAgent.cpp`](root/app/RandomAgent.cpp):
 ```
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-	Client("random", "", tt::Role::NONE, "", url, port), delay(delay)
+    Client("random", "", tt::Role::NONE, "", url, port), delay(delay)
 ```
 Change the string `"random"` to your agent's new name.
 
@@ -84,7 +84,7 @@ to play in the `tutorial` world and only in the `GAME_MASTER` role. You'll need
 to change your agent constructor to look something like this:
 ```
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-	Client("barista", "tutorial", tt::Role::GAME_MASTER, "", url, port), delay(delay)
+    Client("barista", "tutorial", tt::Role::GAME_MASTER, "", url, port), delay(delay)
 ```
 And don't forget to change the [`.env`](.env) file to match:
 ```
@@ -120,13 +120,17 @@ choice from `status->getChoices(const Status*)` that you want to make.
 Change the `on_choice` method like this to print the `world` and `status`
 objects to file so you can see all the useful information in them:
 ```
-int RandomAgent::onChoice(const tt::Status* status) {
-	ofstream f("world.json");
-	json j = 
-	...
+    std::ofstream statusFile("app/status.json");
+    nlohmann::json s = *status;
+    statusFile << s.dump(4) << std::endl;
+    statusFile.close();
+    
+    std::ofstream worldFile("app/world.json");
+    nlohmann::json w = *getWorld();
+    worldFile << w.dump(4) << std::endl;
+    worldFile.close();
 }
 ```
-Don't forget to `import json` at the top of the file too.
 
 Now take a look at
 [`RandomAgentFactory.h](root/app/RandomAgentFactory.h). An agent
@@ -148,12 +152,12 @@ std::unique_ptr<tt::Client> RandomAgentFactory::create() const {
 
 In the `main(int argc, char *argv[])` method of
 [`main.cpp`](root/app/main.cpp),
- you'll see the code that makes a
+you'll see the code that makes a
 new factory and runs it:
 ```
 try {
-  RandomAgentFactory factory = RandomAgentFactory(url, port);
-  factory.execute();
+    RandomAgentFactory factory = RandomAgentFactory(url, port);
+    factory.execute();
 }
 ```
 

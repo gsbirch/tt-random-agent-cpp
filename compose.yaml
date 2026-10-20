@@ -11,8 +11,6 @@ services:
     build:
       # Use the Dockerfile in this directory.
       context: .
-      # Target the 'dev' stage inthe Dockerfile.
-      target: dev
     # Wait for the server to start before starting this agent.
     depends_on:
       server:
@@ -29,6 +27,8 @@ services:
       - certs:/etc/tt/certs
       # The agent's source code is here. You can edit it at run time!
       - ./root/app:/app
+      # Prevent the compiled files from being part of the volume.
+      - /app/build
     # Make this container interactive when it starts.
     stdin_open: true
     tty: true

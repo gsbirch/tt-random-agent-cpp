@@ -1,23 +1,15 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(tt-random-agent-cpp)
+
 include(FetchContent)
+
 FetchContent_Declare(
-    cxxopts
-    GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
-    GIT_TAG v3.2.0
-)
-FetchContent_MakeAvailable(cxxopts)
-
-add_executable(tt-random-agent
-    main.cpp
-    RandomAgent.cpp
-    RandomAgentFactory.cpp
+    library
+    GIT_REPOSITORY https://github.com/gsbirch/tt-client-cpp
+    GIT_TAG main
 )
 
-find_package(OpenSSL REQUIRED)
+FetchContent_MakeAvailable(library)
 
-target_link_libraries(tt-random-agent
-    PRIVATE
-        tt
-        OpenSSL::SSL
-        OpenSSL::Crypto
-        cxxopts::cxxopts
-)
+add_subdirectory(src)
