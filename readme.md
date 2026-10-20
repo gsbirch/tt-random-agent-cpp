@@ -18,7 +18,7 @@ lightweight virtual machine) that has [g++](https://gcc.gnu.org/),
 [CMake](https://cmake.org/), the
 [Tandem Tales C++ client library](https://github.com/gsbirch/tt-client-cpp),
 some additional packages for [SSL](https://www.cloudflare.com/learning/ssl/what-is-ssl/),
-and [the code for this agent](root/app) already installed. Docker makes it easy
+and [the code for this agent](root/app/src) already installed. Docker makes it easy
 to package your agent so others can easily run it without worrying about
 dependencies, versions numbers, etc.
 
@@ -55,7 +55,7 @@ play an interactive story with this agent.
 ### Name and Settings
 
 The first thing you should do to customize this agent is to change its name.
-Find the agent constructor in [`RandomAgent.cpp`](root/app/RandomAgent.cpp):
+Find the agent constructor in [`RandomAgent.cpp`](root/app/src/RandomAgent.cpp):
 ```
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
     Client("random", "", tt::Role::NONE, "", url, port), delay(delay)
@@ -98,7 +98,7 @@ role="GAME_MASTER"
 ### Agent Code
 
 Now it's time to start changing the code. The random agent is pretty simple. 
-Nearly all changes you make will be contained in [one file](root/app/RandomAgent.cpp).
+Nearly all changes you make will be contained in [one file](root/app/src/RandomAgent.cpp).
 
 The only method a Tandem Tales
 [client](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html) *needs* to
@@ -133,7 +133,7 @@ objects to file so you can see all the useful information in them:
 ```
 
 Now take a look at
-[`RandomAgentFactory.h](root/app/RandomAgentFactory.h). An agent
+[`RandomAgentFactory.h](root/app/src/RandomAgentFactory.h). An agent
 only plays one story session and then closes. If you want to be able to play
 with your agent more than once, you need a factory that makes new agents on
 demand.
@@ -151,7 +151,7 @@ std::unique_ptr<tt::Client> RandomAgentFactory::create() const {
 ```
 
 In the `main(int argc, char *argv[])` method of
-[`main.cpp`](root/app/main.cpp),
+[`main.cpp`](root/app/src/main.cpp),
 you'll see the code that makes a
 new factory and runs it:
 ```
@@ -206,7 +206,7 @@ COPY ./root /
 ```
 That line copies all the files and directories in this project's [`root`](root)
 folder into the container's root `/` directory. So if you add the file
-`root/app/Utility.h` to this project, you'll find it at `/app/Utility.h` in
+`root/app/src/Utility.h` to this project, you'll find it at `/app/src/Utility.h` in
 the container. If you add `root/usr/local/bin/script.sh` to this project, you'll
 find it at `/usr/local/bin/script.sh` in the container.
 
