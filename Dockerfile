@@ -34,10 +34,6 @@ WORKDIR /app
 #-------------------------------------------------------------------------------
 FROM base AS dev
 
-# Allow running the sh files
-RUN chmod +x /app/compile.dev.sh
-RUN chmod +x /app/run.dev.sh
-
 # Build the agent
 RUN ./compile.dev.sh
 
@@ -58,10 +54,6 @@ CMD ["sh", "-c", "trap 'exec bash' INT; /app/run.dev.sh; exec bash"]
 # should only run in the final, working version of your image.
 #-------------------------------------------------------------------------------
 FROM base AS prod
-
-# Allow running the sh files
-RUN chmod +x /app/compile.prod.sh
-RUN chmod +x /app/run.prod.sh
 
 # Build the agent
 RUN ./compile.prod.sh
