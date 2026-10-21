@@ -25,6 +25,12 @@ COPY ./root /
 # Set `/app` as the working directory.
 WORKDIR /app
 
+# Allow running the shell scripts
+RUN chmod +x compile.dev.sh
+RUN chmod +x compile.prod.sh
+RUN chmod +x run.dev.sh
+RUN chmod +x run.prod.sh
+
 #-------------------------------------------------------------------------------
 # Development Phase
 # The instructions in this section only run if you build the image with
