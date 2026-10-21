@@ -267,9 +267,8 @@ like this:
 ```
 int RandomAgent::onChoice(const tt::Status* status) {
   int count = status->getChoices().size();
-  std::string role = "You are a helpful assistant.";
   std::string prompt = "Choose a number between 0 and " + std::to_string(count) + " inclusive.";
-  std::string response = complete({role, prompt}, "medium");
+  std::string response = complete(prompt);
   return stoi(response);
 }
 ```
