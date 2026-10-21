@@ -129,7 +129,6 @@ objects to file so you can see all the useful information in them:
     nlohmann::json w = *getWorld();
     worldFile << w.dump(4) << std::endl;
     worldFile.close();
-}
 ```
 
 Now take a look at
@@ -234,7 +233,7 @@ got a session open in a web browser, close that tab so the factory can stop.
 Then make some changes to the code using your favorite text editor on your
 computer. Now type this to start the factory back up:
 ```
-./build/app/tt-random-agent
+./compile.dev.sh && ./run.dev.sh
 ```
 
 ### Using the External API
@@ -266,12 +265,13 @@ apikey=0123456789abcdefghijklmnopqrstuvwxyz
 Now you can modify your `onChoice(const Status*)` method to use an LLM to make a random choice
 like this:
 ```
-int RandomAgent::onChoice(const tt::Status* status)
+int RandomAgent::onChoice(const tt::Status* status) {
   int count = status->getChoices().size();
   std::string role = "You are a helpful assistant.";
   std::string prompt = "Choose a number between 0 and " + std::to_string(count) + " inclusive.";
   std::string response = complete({role, prompt}, "medium");
   return stoi(response);
+}
 ```
 
 But watch out! This code assumes you'll get just an interger back as the
