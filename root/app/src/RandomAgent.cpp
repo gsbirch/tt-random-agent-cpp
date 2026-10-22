@@ -22,10 +22,8 @@ const int RandomAgent::DEFAULT_PORT = 9005;
 //Client.DEFAULT_PORT;
 
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-Client("random", "", tt::Role::NONE, "", url, port), delay(delay)
+Client("random", "", tt::Role::NONE, "", url, port), delay(delay), rng(seed)
 {
-    // set the seed for random
-    srand(seed);
 }
 
 RandomAgent::RandomAgent(const std::string &url, int port, long delay):
@@ -71,21 +69,10 @@ void RandomAgent::onUpdate(const tt::Status* status)
 // Required: Runs each time the world updates and it is the client's turn.
 int RandomAgent::onChoice(const tt::Status* status)
 {
-    std::ofstream statusFile("app/status.json");
-    nlohmann::json s = *status;
-    statusFile << s.dump(4) << std::endl;
-    statusFile.close();
-    
-    std::ofstream worldFile("app/world.json");
-    nlohmann::json w = *getWorld();
-    worldFile << w.dump(4) << std::endl;
-    worldFile.close();
-
     int choice = -1;
     // If my partner has proposed a move, accept or reject it.
     if(isProposal(status)) {
-        double x = (rand() % 101) * 1.0;
-        if(x < SUCCEED_PROBABILITY * 100.0)
+        if(unit(rng) < SUCCEED_PROBABILITY)
             choice = 0; // succeed
         else
             choice = 1; // fail
@@ -93,11 +80,13 @@ int RandomAgent::onChoice(const tt::Status* status)
     // If this is a normal turn and the agent has at least one choice...
     else if(status->getChoices().size() > 1) {
         // Decide if I will act or pass.
-        double x = (rand() % 101) * 1.0;
-        if (x < PASS_PROBABILITY * 100.0)
+        if (unit(rng) < PASS_PROBABILITY)
             choice = status->getChoices().size() - 1; // pass
-        else
-            choice = rand() % (status->getChoices().size() - 1); // act
+        else{
+            // cast the size to an int to use in the distribution
+            const auto n = static_cast<int>(status->getChoices().size());
+            choice = std::uniform_int_distribution<int>{1, n - 2}(rng); // act
+        }
     }
     // If the agent has no choices, pass.
     else
@@ -105,11 +94,8 @@ int RandomAgent::onChoice(const tt::Status* status)
     // Wait a random amount of time before sending the choice.
     try {
         if(delay > 0) {
-            std::random_device rd;
-            std::mt19937_64 gen(rd());
             std::uniform_int_distribution<long long> dist(0, delay - 1);
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(dist(gen)));
+            std::this_thread::sleep_for(std::chrono::milliseconds(dist(rng)));
         }
     }
     catch(...) {

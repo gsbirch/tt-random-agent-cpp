@@ -2,6 +2,7 @@
 
 #include <string>
 #include <ostream>
+#include <random>
 
 #include <tt/Client.h>
 #include <tt/io/Connect.h>
@@ -106,6 +107,10 @@ class RandomAgent : public tt::Client {
          * if this is a normal turn
          */
         static bool isProposal(const tt::Status* status);
+
+        /** Used to generate random numbers. */
+        std::mt19937_64 rng;
+        std::uniform_real_distribution<double> unit{0.0, 1.0};
 };
 
 #endif
