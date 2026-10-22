@@ -85,7 +85,7 @@ int RandomAgent::onChoice(const tt::Status* status)
         else{
             // cast the size to an int to use in the distribution
             const auto n = static_cast<int>(status->getChoices().size());
-            choice = std::uniform_int_distribution<int>{1, n - 2}(rng); // act
+            choice = std::uniform_int_distribution<int>{0, n - 2}(rng); // act
         }
     }
     // If the agent has no choices, pass.
