@@ -38,7 +38,6 @@ FROM base AS dev
 RUN ./compile.dev.sh
 
 # Clean up the container
-RUN apt purge -y git
 RUN apt autoremove -y
 RUN apt clean
 RUN rm -rf /var/lib/apt/lists/*
