@@ -36,7 +36,7 @@ services:
     tty: true
   # Tandem Tales server configuration
   server:
-    image: tt-web
+    image: sgware/tt-web
     tmpfs:
     - /var/log/tt
     # Configure the server's environment variables.
