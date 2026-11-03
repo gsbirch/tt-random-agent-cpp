@@ -306,7 +306,7 @@ agent.
 
 ## Version History
 
-- 0.9.0: First public release.
+- 1.0.0: First public release.
 
 ## License
 

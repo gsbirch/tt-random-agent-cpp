@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     const std::string NAME = "Tandem Tales Random Agent (C++)";
     
     /** The version number of this agent */
-    const std::string VERSION = "0.9.0";
+    const std::string VERSION = "1.0.0";
     
     /** The authors of this agent */
     const std::string AUTHORS = "Gage Birchmeier";
