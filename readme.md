@@ -275,7 +275,7 @@ like this:
 int RandomAgent::onChoice(const tt::Status* status) {
   int count = status->getChoices().size();
   std::string prompt = "Choose a number between 0 and " + std::to_string(count - 1) + " inclusive.";
-  std::string response = complete(prompt);
+  std::string response = external.complete(prompt);
   return stoi(response);
 }
 ```
