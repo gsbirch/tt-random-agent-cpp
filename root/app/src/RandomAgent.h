@@ -3,6 +3,7 @@
 #include <string>
 #include <ostream>
 #include <random>
+#include <atomic>
 
 #include <tt/Client.h>
 #include <tt/io/Connect.h>
@@ -18,7 +19,7 @@
  * turn, the agent has a {@link #PASS_PROBABILITY} chance to pass control to its
  * partner. If it does not pass, it chooses a non-pass action uniformly at
  * random. There is one exception to this rule. When this agent has to decide on
- * a join action proposed by its partner, it has a {@link SUCCEED_PROBABILITY}
+ * a join action proposed by its partner, it has a {@link #SUCCEED_PROBABILITY}
  * chance of letting the action succeed.
  * <p>
  * This agent waits a random number of milliseconds up to {@link #delay} to give
@@ -35,7 +36,7 @@ class RandomAgent : public tt::Client {
         static const int DEFAULT_PORT;
 
         /** A unique ID number used to identify this agent */
-        int id = nextID++;
+        std::atomic<int> id = nextID++;
 
         /** Max milliseconds this agent will wait before taking a turn */
         const long delay;
@@ -46,7 +47,7 @@ class RandomAgent : public tt::Client {
          * @param url the URL of the server to connect to
          * @param port the network port to connect to the server on
          * @param seed the seed used by the pseudo-random number generator that
-         * make decisions
+         * makes decisions
          * @param delay the max milliseconds to wait before taking a turn
          */
         RandomAgent(const std::string& url, int port, long seed, long delay);

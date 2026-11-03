@@ -1,4 +1,5 @@
 #include "RandomAgentFactory.h"
+#include "RandomAgent.h"
 
 #include <iostream>
 

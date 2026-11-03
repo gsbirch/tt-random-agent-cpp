@@ -48,7 +48,10 @@ docker compose up
 ```
 Then open a web browser and go to [http://localhost](http://localhost) to see a
 local version of the Tandem Tales website running on your computer where you can
-play an interactive story with this agent.
+play an interactive story with this agent. You will likely see a security
+warning because the traffic is encrypted with a self-signed certificate. It is
+safe to ignore this warning because everything is running locally on your
+computer.
 
 ## Make This Agent Your Own
 
@@ -58,11 +61,11 @@ The first thing you should do to customize this agent is to change its name.
 Find the agent constructor in [`RandomAgent.cpp`](root/app/src/RandomAgent.cpp):
 ```
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-    Client("random", "", tt::Role::NONE, "", url, port), delay(delay)
+    Client("random", "", tt::Role::NONE, "", url, port), delay(delay), rng(seed)
 ```
 Change the string `"random"` to your agent's new name.
 
-You also need to set this new name name in the environment variable file
+You also need to set this new name in the environment variable file
 [`.env`](.env). Change the line that looks like this:
 ```
 name="random"
@@ -84,7 +87,7 @@ to play in the `tutorial` world and only in the `GAME_MASTER` role. You'll need
 to change your agent constructor to look something like this:
 ```
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
-    Client("barista", "tutorial", tt::Role::GAME_MASTER, "", url, port), delay(delay)
+    Client("barista", "tutorial", tt::Role::GAME_MASTER, "", url, port), delay(delay), rng(seed)
 ```
 And don't forget to change the [`.env`](.env) file to match:
 ```
@@ -102,8 +105,8 @@ Nearly all changes you make will be contained in [one file](root/app/src/RandomA
 
 The only method a Tandem Tales
 [client](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html) *needs* to
-implements is
-[`on_choice(const Status*)`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a57493c0cd87fb7ef6b59cd4b8a3a75af).
+implement is
+[`on_choice(const tt::Status*)`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a57493c0cd87fb7ef6b59cd4b8a3a75af).
 Every time it is your agent's turn in the story, this method gets called. The
 `status` object has
 [a ton of useful information](https://sgware.github.io/tt/protocol.html#status-object)
@@ -114,25 +117,29 @@ in it, including:
   your agent can currently see.
 - `status->getChoices()` is a list of the things you can do next.
 
-The `on_choice(const Status*)` method should return the integer index (starting at 0) of the
-choice from `status->getChoices(const Status*)` that you want to make.
+The `on_choice(const tt::Status*)` method should return the integer index (starting at 0) of the
+choice from `status->getChoices()` that you want to make.
 
-Change the `on_choice` method like this to print the `world` and `status`
+Change the `on_choice(const tt::Status*)` method to include something like this to print the `world` and `status`
 objects to file so you can see all the useful information in them:
 ```
-    std::ofstream statusFile("app/status.json");
+    // Make sure to include these at the top of the file
+    #include <fstream>
+    #include <nlohmann/json.hpp>
+
+    std::ofstream statusFile("status.json");
     nlohmann::json s = *status;
     statusFile << s.dump(4) << std::endl;
     statusFile.close();
     
-    std::ofstream worldFile("app/world.json");
+    std::ofstream worldFile("world.json");
     nlohmann::json w = *getWorld();
     worldFile << w.dump(4) << std::endl;
     worldFile.close();
 ```
 
 Now take a look at
-[`RandomAgentFactory.h](root/app/src/RandomAgentFactory.h). An agent
+[`RandomAgentFactory.h`](root/app/src/RandomAgentFactory.h). An agent
 only plays one story session and then closes. If you want to be able to play
 with your agent more than once, you need a factory that makes new agents on
 demand.
@@ -174,7 +181,7 @@ The only methods you *need* to implement are `onChoice(const Status*)` in your a
 `create()` in your factory. But there's a bunch of other methods that get called
 at important moments in the agent's life that you might find helpful.
 
-For example, if your agent need to load some resource before it joins the
+For example, if your agent needs to load some resource before it joins the
 server, you could do that in the
 [`onConnect(const Connect*)`](https://gsbirch.github.io/tt-client-cpp/classtt_1_1Client.html#a97adf5d690a59597a098f1d4d10e0c28)
 method which runs after opening the connection but before waiting for a partner.
@@ -267,19 +274,35 @@ like this:
 ```
 int RandomAgent::onChoice(const tt::Status* status) {
   int count = status->getChoices().size();
-  std::string prompt = "Choose a number between 0 and " + std::to_string(count) + " inclusive.";
+  std::string prompt = "Choose a number between 0 and " + std::to_string(count - 1) + " inclusive.";
   std::string response = complete(prompt);
   return stoi(response);
 }
 ```
 
-But watch out! This code assumes you'll get just an interger back as the
+But watch out! This code assumes you'll get just an integer back as the
 response, but you might get something like `"I choose 3"`. Your code will need
 to handle those cases.
 
 Check out the
 [Tandem Tales C++ Client documentation](https://gsbirch.github.io/tt-client-cpp/classtt_1_1ExternalAPI.html)
 to see all the options available in the external API.
+
+### Publishing and Distributing Your Agent
+
+We recommend that you publish the source code and instructions for how to run
+your agent to a public repository like [GitHub.com](https://github.com).
+
+If you want to send your agent to someone else (for example, if you want to send
+it to the maintainers of [tandemtales.net](https://tandemtales.net)) you can
+package it into a file by going to the project's root directory and running:
+```
+docker save -o random.tar tt-random-agent-cpp:latest
+```
+This will create a file call `random.tar` that you can send to others. The file
+does not include the configuration information in [`compose.yaml`](compose.yaml)
+or [`.env`](.env), so make sure to document any settings needed to run your
+agent.
 
 ## Version History
 
@@ -288,7 +311,7 @@ to see all the options available in the external API.
 ## License
 
 The Tandem Tales Random Agent (C++) was developed by Gage Birchmeier
-in the [Computer Science department](http://cs.uky.edu) at the
+in the [Computer Science Department](http://cs.uky.edu) at the
 [University of Kentucky](http://uky.edu). Development was sponsored in part by
 the [US National Science Foundation](http://www.nsf.gov),
 ([Grant #2145153](https://www.nsf.gov/awardsearch/show-award?AWD_ID=2145153))

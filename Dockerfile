@@ -13,7 +13,7 @@ FROM ubuntu:24.04 AS base
 # Update packages.
 RUN apt update
 # Git downloads the Tandem Tales C++ library.
-# g++ and cmake compile the C++ project
+# g++ and cmake compile the C++ project.
 RUN apt install -y git g++ cmake
 # These are used to open an ssl connection to the server
 # and to make external API calls

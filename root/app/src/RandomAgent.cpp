@@ -2,12 +2,10 @@
 
 #include <string>
 #include <iostream>
-#include <cstdlib>
 #include <ctime>
 #include <thread>
 #include <chrono>
 #include <random>
-#include <fstream>
 
 #include <tt/Role.h>
 #include <tt/world/Turn.h>
@@ -19,7 +17,6 @@ int RandomAgent::nextID = 0;
 
 const std::string RandomAgent::DEFAULT_URL = "localhost";
 const int RandomAgent::DEFAULT_PORT = 9005;
-//Client.DEFAULT_PORT;
 
 RandomAgent::RandomAgent(const std::string &url, int port, long seed, long delay):
 Client("random", "", tt::Role::NONE, "", url, port), delay(delay), rng(seed)
@@ -92,14 +89,9 @@ int RandomAgent::onChoice(const tt::Status* status)
     else
         choice = 0;
     // Wait a random amount of time before sending the choice.
-    try {
-        if(delay > 0) {
-            std::uniform_int_distribution<long long> dist(0, delay - 1);
-            std::this_thread::sleep_for(std::chrono::milliseconds(dist(rng)));
-        }
-    }
-    catch(...) {
-        // If interrupted, return choice immediately.
+    if(delay > 0) {
+        std::uniform_int_distribution<long long> dist(0, delay - 1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(dist(rng)));
     }
     // Return the choice.
 	std::cout << *this << " chooses: \"" << status->getChoices()[choice]->getDescription() << "\"." << std::endl;
@@ -138,7 +130,7 @@ void RandomAgent::onDisconnect()
 
 bool RandomAgent::isProposal(const tt::Status *status)
 {
-    auto choices = status->getChoices();
+    const auto& choices = status->getChoices();
     return choices.size() == 2 &&
         choices[0]->type == tt::Turn::Type::SUCCEED &&
         choices[1]->type == tt::Turn::Type::FAIL;

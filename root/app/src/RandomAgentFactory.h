@@ -1,15 +1,11 @@
 #pragma once
 
-#include "RandomAgent.h"
-
-#include <iostream>
 #include <string>
 #include <memory>
-
 #include <tt/ClientFactory.h>
 
-#ifndef RANDOM_AGENT_FACTORY
-#define RANDOM_AGENT_FACTORY
+#ifndef RANDOM_AGENT_FACTORY_H
+#define RANDOM_AGENT_FACTORY_H
 
 /**
  * A factory that continuously creates {@link RandomAgent}s as needed.

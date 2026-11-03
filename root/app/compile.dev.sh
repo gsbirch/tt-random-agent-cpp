@@ -10,7 +10,7 @@ if [ -d /library ]; then
 fi
 
 # Compile the program with CMake
-# This uses the CMakesLists.txt
+# This uses the CMakesList.txt
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_CXX_FLAGS="-g -O0 -fsanitize=address,undefined -fno-omit-frame-pointer" \
   $EXTRA
