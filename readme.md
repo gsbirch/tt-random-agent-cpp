@@ -1,5 +1,7 @@
 # Tandem Tales Random Agent (C++)
 
+https://github.com/user-attachments/assets/a970f402-8f31-4d3d-be0c-fabcf67c6e4a
+
 This repository provides a simple example of how to create a
 [Tandem Tales](https://sgware.github.io/tt) agent in C++ that makes random
 decisions according to this policy:
